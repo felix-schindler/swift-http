@@ -35,6 +35,8 @@ public struct HttpUrl {
     /// Appends trailing slash at the end of the path, e.g. `localhost.com/any/path/`
     public private(set) var isTrailingSlashEnabled: Bool
     
+    public private(set) var _url: URL?
+    
     ///
     /// Initialize a HttpUrl object
     ///
@@ -54,7 +56,8 @@ public struct HttpUrl {
                 resource: String? = nil,
                 query: [String : String] = [:],
                 fragment: String? = nil,
-                trailingSlashEnabled: Bool = true) {
+                trailingSlashEnabled: Bool = true,
+                url: URL? = nil) {
         self.scheme = scheme
         self.host = host
         self.port = port
@@ -63,6 +66,7 @@ public struct HttpUrl {
         self.query = query
         self.fragment = fragment
         self.isTrailingSlashEnabled = trailingSlashEnabled
+        self._url = url
     }
 }
 
@@ -182,6 +186,9 @@ public extension HttpUrl {
     
     /// Returns the URL representation of the HttpUrl object
     var url: URL {
+        if (_url != nil) {
+            return _url!
+        }
         var components = URLComponents()
         components.scheme = scheme
         components.host = host
@@ -247,7 +254,8 @@ extension HttpUrl {
             path: path,
             resource: resource,
             query: components.queryItems.map({ Dictionary($0.map({ ($0.name, $0.value ?? "") })) { _, s in s } }) ?? [:],
-            fragment: components.fragment
+            fragment: components.fragment,
+            url: url
         )
     }
 }
