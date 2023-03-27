@@ -29,11 +29,7 @@ public struct HttpUrl {
     public var query: [String: String]
     
     /// Fragment of the url, e.g. `#foo`
-    
     public var fragment: String?
-
-    /// Appends trailing slash at the end of the path, e.g. `localhost.com/any/path/`
-    public private(set) var isTrailingSlashEnabled: Bool
     
     ///
     /// Initialize a HttpUrl object
@@ -45,7 +41,6 @@ public struct HttpUrl {
     /// - Parameter resource: The  resource, default: `nil`
     /// - Parameter query: The  query, default: `[:]`
     /// - Parameter fragment: The  fragment, default: `nil`
-    /// - Parameter trailingSlashEnabled: Sets  ``HttpUrl/isTrailingSlashEnabled``, default: `true`
     ///
     public init(scheme: String = "https",
                 host: String,
@@ -53,8 +48,7 @@ public struct HttpUrl {
                 path: [String] = [],
                 resource: String? = nil,
                 query: [String : String] = [:],
-                fragment: String? = nil,
-                trailingSlashEnabled: Bool = true) {
+                fragment: String? = nil) {
         self.scheme = scheme
         self.host = host
         self.port = port
@@ -62,7 +56,6 @@ public struct HttpUrl {
         self.resource = resource
         self.query = query
         self.fragment = fragment
-        self.isTrailingSlashEnabled = trailingSlashEnabled
     }
 }
 
@@ -187,18 +180,14 @@ public extension HttpUrl {
         components.host = host
         components.port = port
         var path = "/" + path.joined(separator: "/")
-
-        if let resource = resource {
-            path += (resource.hasPrefix("/") ? resource.url() : "/" + resource.url())
-        }
-        else {
-            if isTrailingSlashEnabled {
+        
+        if let resource = resource?.url() {
+            if (!resource.starts(with: "/")) {
                 path += "/"
             }
+            
+            path += resource
         }
-//        if !isTrailingSlashEnabled, path.last == "/", !query.isEmpty {
-//            path.removeLast()
-//        }
         components.percentEncodedPath = path
         components.fragment = fragment
         components.queryItems = query.map { .init(name: $0.key, value: $0.value) }
