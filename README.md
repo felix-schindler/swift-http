@@ -1,4 +1,6 @@
-# SwiftHttp
+# SwiftHttp fork
+
+> All of my changes are documented in CHANGELOG.md
 
 An awesome Swift HTTP library to rapidly create communication layers with API endpoints. 
 
@@ -193,5 +195,3 @@ You can create your own HttpRequestTransformer object to add extra headers to yo
 You can create your own HttpResponseTransformer object to validate the response and decode a custom value from the response data.
 
 The codable (encodable, decodable, codable) pipelines are a good example of this approach.
-
-
