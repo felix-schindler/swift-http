@@ -43,6 +43,15 @@ public struct UrlSessionHttpClient: HttpClient {
         }
         let res: (Data, URLResponse)
         
+        let cache: CachedURLResponse? = URLCache.shared.cachedResponse(for: urlRequest)
+        if (cache != nil) {
+            do {
+                return try HttpRawResponse((cache!.data, cache!.response))
+            } catch {
+                print(error)
+            }
+        }
+        
 #if os(Linux)
         res = try await asyncMethod(with: urlRequest, session.dataTask)
 #else
@@ -52,6 +61,8 @@ public struct UrlSessionHttpClient: HttpClient {
             res = try await asyncMethod(with: urlRequest, session.dataTask)
         }
 #endif
+        
+        URLCache.shared.storeCachedResponse(CachedURLResponse(response: res.1, data: res.0), for: urlRequest)
         return try HttpRawResponse(res)
     }
     

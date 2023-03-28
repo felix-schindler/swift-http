@@ -1,5 +1,9 @@
 #  Changelog
 
+## f1.0.2
+
+- Added use of URLCache for `UrlSessionHttpClient.dataTask`
+
 ## f1.0.1
 
 - Removed `trailingSlashEnabled`
