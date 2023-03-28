@@ -1,5 +1,10 @@
 #  Changelog
 
+## f1.0.3
+
+- Bumped dev target to iOS 15, watchOS 8, macOS 12 or newer
+- Removed Linux and old iOS compatibility from UrlSessionHttpClient
+
 ## f1.0.2
 
 - Added use of URLCache for `UrlSessionHttpClient.dataTask`
