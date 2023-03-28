@@ -9,10 +9,10 @@ import XCTest
 @testable import SwiftHttp
 
 final class SwiftHttpTests: XCTestCase {
-        
+    private let api = PostApi()
+
     func testCancellation() async throws {
         let task = Task {
-            let api = PostApi()
             _ = try await api.listPosts()
             XCTFail("Request should be cancelled")
         }
@@ -31,7 +31,6 @@ final class SwiftHttpTests: XCTestCase {
     }
     
     func testError() async throws {
-        let api = PostApi()
         do {
             _ = try await api.invalidApiCall()
         }
@@ -44,7 +43,6 @@ final class SwiftHttpTests: XCTestCase {
     }
     
     func testQueryParams() async throws {
-        let api = PostApi()
         let res = try await api.filterPosts(1)
         XCTAssertEqual(res.count, 10)
     }

@@ -9,8 +9,7 @@ import XCTest
 @testable import SwiftHttp
 
 final class PostTests: XCTestCase {
-        
-    let api = PostApi()
+    private let api = PostApi()
     
     func testList() async throws {
         let posts = try await api.listPosts()
@@ -46,4 +45,3 @@ final class PostTests: XCTestCase {
     }
 
 }
-
