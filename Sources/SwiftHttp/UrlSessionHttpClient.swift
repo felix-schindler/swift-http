@@ -48,6 +48,10 @@ public struct UrlSessionHttpClient: HttpClient {
         } else {
             // Send request
             res = try await session.data(for: urlRequest)
+            
+            URLCache.shared.memoryCapacity = 50_000_000
+            URLCache.shared.diskCapacity = 1_000_000_000
+
             // Save response and data
             URLCache.shared.storeCachedResponse(CachedURLResponse(response: res.1, data: res.0), for: urlRequest)
         }
