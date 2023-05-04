@@ -1,5 +1,9 @@
 #  Changelog
 
+## f1.0.4
+
+- Removed all Cache things again
+
 ## f1.0.3
 
 - Bumped dev target to iOS 15, watchOS 8, macOS 12 or newer

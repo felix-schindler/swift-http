@@ -39,23 +39,7 @@ public struct UrlSessionHttpClient: HttpClient {
             print(urlRequest.curlString)
         }
 
-        let res: (Data, URLResponse)
-        let cache: CachedURLResponse? = URLCache.shared.cachedResponse(for: urlRequest)
-
-        if (cache != nil) {
-            // Set res to cached reponse and data
-            res = (cache!.data, cache!.response)
-        } else {
-            // Send request
-            res = try await session.data(for: urlRequest)
-            
-            URLCache.shared.memoryCapacity = 50_000_000
-            URLCache.shared.diskCapacity = 1_000_000_000
-
-            // Save response and data
-            URLCache.shared.storeCachedResponse(CachedURLResponse(response: res.1, data: res.0), for: urlRequest)
-        }
-
+				let res = try await session.data(for: urlRequest)
         return try HttpRawResponse(res)
     }
     
@@ -77,19 +61,7 @@ public struct UrlSessionHttpClient: HttpClient {
             print(urlRequest.curlString)
         }
 
-        let res: (Data, URLResponse)
-        let cache: CachedURLResponse? = URLCache.shared.cachedResponse(for: urlRequest)
-        
-        if (cache != nil) {
-            // Set res to cached reponse and data
-            res = (cache!.data, cache!.response)
-        } else {
-            // Send upload request
-            res = try await session.upload(for: urlRequest, from: data, delegate: nil)
-            // Save response and data
-            URLCache.shared.storeCachedResponse(CachedURLResponse(response: res.1, data: res.0), for: urlRequest)
-        }
-
+				let res = try await session.upload(for: urlRequest, from: data, delegate: nil)
         return try HttpRawResponse(res)
     }
     
@@ -113,6 +85,7 @@ public struct UrlSessionHttpClient: HttpClient {
         guard let pathData = res.0.path.data(using: .utf8) else {
             throw HttpError.invalidResponse
         }
-        return try HttpRawResponse((pathData, res.1))
+
+				return try HttpRawResponse((pathData, res.1))
     }
 }
