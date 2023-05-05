@@ -23,7 +23,11 @@ public struct HttpUrl {
     public var path: [String]
     
     /// Resource part of the url after the path components, e.g. `sitemap.xml`
+		/// This is being URL-encoded so you can't but any path in it. To do that, add a suffix
     public var resource: String?
+
+		/// If you need some path behind your resource, use this!
+		public var suffix: String?
     
     /// Query parameters, e.g. `?foo=bar`
     public var query: [String: String]
@@ -47,6 +51,7 @@ public struct HttpUrl {
                 port: Int = 80,
                 path: [String] = [],
                 resource: String? = nil,
+								suffix: String? = nil,
                 query: [String : String] = [:],
                 fragment: String? = nil) {
         self.scheme = scheme
@@ -54,6 +59,7 @@ public struct HttpUrl {
         self.port = port
         self.path = path
         self.resource = resource
+				self.suffix = suffix
         self.query = query
         self.fragment = fragment
     }
@@ -157,6 +163,16 @@ public extension HttpUrl {
         newUrl.resource = resource
         return newUrl
     }
+	
+		///
+		/// Add a suffix part to the url
+		/// - Parameter suffix: Suffix path component
+		/// - Returns: A new HttpUrl object
+		func suffix(_ suffix: String) -> HttpUrl {
+				var newUrl = self
+				newUrl.suffix = suffix
+				return newUrl
+		}
     
     ///
     /// Add a fragment to the url
@@ -188,6 +204,11 @@ public extension HttpUrl {
             
             path += resource
         }
+			
+				if let suffix = suffix {
+						path += suffix
+				}
+			
         components.percentEncodedPath = path
         components.fragment = fragment
         components.queryItems = query.map { .init(name: $0.key, value: $0.value) }

@@ -30,6 +30,17 @@ final class HttpUrlTests: XCTestCase {
         ])
         XCTAssertEqual(query2Url.url.absoluteString, "https://jsonplaceholder.typicode.com/todos?foo=1")
     }
+	
+		func testMorePaths() async throws {
+				let baseUrl = HttpUrl(host: "gitlab.com")
+				
+				var files = baseUrl.path("api/v4", "projects/33025310", "repository/files")
+				files.resource = "GitLab/GitLabApp.swift"
+				files.suffix = "/raw"
+				files.query = ["ref": "main"]
+				
+				XCTAssertEqual(files.url.absoluteString, "https://gitlab.com/api/v4/projects/33025310/repository/files/GitLab%2FGitLabApp.swift/raw?ref=main")
+		}
     
     func testEncoding() {
         let url = URL(string: "https://jsonplaceholder.typicode.com/todos/some%2Ffile%2Fpath.xml")

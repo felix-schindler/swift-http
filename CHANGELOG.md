@@ -1,5 +1,9 @@
 #  Changelog
 
+## f1.0.5
+
+- Add `suffix` to `HttpUrl` which is placed behind `resource`
+
 ## f1.0.4
 
 - Removed all Cache things again
