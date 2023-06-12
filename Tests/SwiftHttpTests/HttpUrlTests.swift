@@ -35,7 +35,8 @@ final class HttpUrlTests: XCTestCase {
     func testMorePaths() async throws {
         let baseUrl = HttpUrl(host: "gitlab.com")
         
-        var files = baseUrl.path("api/v4", "projects/33025310", "repository/files")
+        // Do NOT change `api/v4`. We need to be sure the / isn't encoded
+        var files = baseUrl.path("api/v4", "projects", "33025310", "repository", "files")
         files.resource = "GitLab/GitLabApp.swift"
         files.suffix = "/raw"
         files.query = ["ref": "main"]
@@ -44,6 +45,7 @@ final class HttpUrlTests: XCTestCase {
     }
     
     func testEncoding() {
+        let baseUrl = HttpUrl(host: "jsonplaceholder.typicode.com")
         let url = URL(string: "https://jsonplaceholder.typicode.com/todos/some%2Ffile%2Fpath.xml")
         XCTAssertEqual(url?.absoluteString, "https://jsonplaceholder.typicode.com/todos/some%2Ffile%2Fpath.xml")
         
@@ -56,7 +58,7 @@ final class HttpUrlTests: XCTestCase {
         let todoUrl = baseUrl.path("todos", String(1))
         XCTAssertEqual(
             todoUrl.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos/1/"
+            "https://jsonplaceholder.typicode.com/todos/1"
         )
         
         let query2Url = baseUrl.path("todos").query([
@@ -64,57 +66,7 @@ final class HttpUrlTests: XCTestCase {
         ])
         XCTAssertEqual(
             query2Url.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos/?foo=1"
-        )
-    }
-    
-    func testTrailingSlashEnabled() {
-        let baseUrl = HttpUrl(
-            host: "jsonplaceholder.typicode.com",
-            trailingSlashEnabled: true
-        )
-        
-        let todosUrl = baseUrl.path("todos")
-        XCTAssertEqual(
-            todosUrl.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos/"
-        )
-        
-        let sitemapUrl = baseUrl.path("todos").resource("sitemap.xml")
-        XCTAssertEqual(
-            sitemapUrl.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos/sitemap.xml"
-        )
-        
-        let query1Url = baseUrl.path("todos").query("foo", "bar")
-        XCTAssertEqual(
-            query1Url.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos/?foo=bar"
-        )
-    }
-    
-    func testTrailingSlashDisabled() {
-        let baseUrl = HttpUrl(
-            host: "jsonplaceholder.typicode.com",
-            trailingSlashEnabled: false
-        )
-        
-        let todosUrl = baseUrl.path("todos")
-        XCTAssertEqual(
-            todosUrl.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos"
-        )
-        
-        let sitemapUrl = baseUrl.path("todos").resource("sitemap.xml")
-        XCTAssertEqual(
-            sitemapUrl.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos/sitemap.xml"
-        )
-        
-        let query1Url = baseUrl.path("todos").query("foo", "bar")
-        XCTAssertEqual(
-            query1Url.url.absoluteString,
-            "https://jsonplaceholder.typicode.com/todos?foo=bar"
+            "https://jsonplaceholder.typicode.com/todos?foo=1"
         )
     }
     

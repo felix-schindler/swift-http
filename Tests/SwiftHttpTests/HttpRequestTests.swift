@@ -27,11 +27,12 @@ final class HttpRequestTests: XCTestCase {
         )
 
         let expectation = """
-            curl "https://localhost/login/" \\
+
+            curl "https://localhost/login" \\
             \t-X POST \\
             \t-H 'Authorization: Bearer valid-token' \\
             \t-d '{"foo":"bar"}'
-        """
+            """
 
         XCTAssertEqual(req.urlRequest.curlString, expectation)
     }
