@@ -6,8 +6,9 @@
 //
 
 import Foundation
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 /// A HTTP response object with a raw data value
@@ -15,10 +16,10 @@ public struct HttpRawResponse: HttpResponse {
 
     /// The status code of the response
     public let statusCode: HttpStatusCode
-    
+
     /// The header fields for the response
     public let headers: [HttpHeaderKey: String]
-    
+
     /// The raw data value for the response
     public let data: Data
 
@@ -29,7 +30,11 @@ public struct HttpRawResponse: HttpResponse {
     /// - Parameter headers: The header fields
     /// - Parameter data: The body data
     ///
-    public init(statusCode: HttpStatusCode, headers: [HttpHeaderKey: String], data: Data) {
+    public init(
+        statusCode: HttpStatusCode,
+        headers: [HttpHeaderKey: String],
+        data: Data
+    ) {
         self.statusCode = statusCode
         self.headers = headers
         self.data = data
@@ -53,7 +58,8 @@ public struct HttpRawResponse: HttpResponse {
             let headerKey: HttpHeaderKey = .custom(key)
             headers[headerKey] = value
         }
-        guard let statusCode = HttpStatusCode(rawValue: response.statusCode) else {
+        guard let statusCode = HttpStatusCode(rawValue: response.statusCode)
+        else {
             throw HttpError.unknownStatusCode
         }
         self.init(statusCode: statusCode, headers: headers, data: tuple.0)
@@ -61,4 +67,5 @@ public struct HttpRawResponse: HttpResponse {
 }
 
 extension HttpRawResponse: Codable, Equatable {
+
 }

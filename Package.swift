@@ -13,10 +13,12 @@ let package = Package(
         .library(name: "SwiftHttp", targets: ["SwiftHttp"]),
     ],
     dependencies: [
-        
+        .package(url: "https://github.com/apple/swift-log", from: "1.5.0"),
     ],
     targets: [
-        .target(name: "SwiftHttp", dependencies: []),
+        .target(name: "SwiftHttp", dependencies: [
+            .product(name: "Logging", package: "swift-log")
+        ]),
         .testTarget(name: "SwiftHttpTests", dependencies: ["SwiftHttp"]),
     ]
 )

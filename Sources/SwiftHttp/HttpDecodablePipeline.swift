@@ -9,14 +9,14 @@ import Foundation
 
 /// A decodable pipeline workflow, to decode a value from the response
 public struct HttpDecodablePipeline<U: Decodable>: HttpRequestPipeline {
-    
+
     let url: HttpUrl
     let method: HttpMethod
     let headers: [HttpHeaderKey: String]
     let body: Data?
     let validators: [HttpResponseValidator]
     let decoder: HttpResponseDecoder<U>
-    
+
     ///
     /// Initialize the pipeline
     ///
@@ -27,12 +27,14 @@ public struct HttpDecodablePipeline<U: Decodable>: HttpRequestPipeline {
     /// - Parameter validators: The response validators
     /// - Parameter decoder: The decoder used to decode the response data
     ///
-    public init(url: HttpUrl,
-                method: HttpMethod,
-                headers: [HttpHeaderKey: String] = [:],
-                body: Data? = nil,
-                validators: [HttpResponseValidator] = [HttpStatusCodeValidator()],
-                decoder: HttpResponseDecoder<U>) {
+    public init(
+        url: HttpUrl,
+        method: HttpMethod,
+        headers: [HttpHeaderKey: String] = [:],
+        body: Data? = nil,
+        validators: [HttpResponseValidator] = [HttpStatusCodeValidator()],
+        decoder: HttpResponseDecoder<U>
+    ) {
         self.url = url
         self.method = method
         self.headers = headers
@@ -40,7 +42,7 @@ public struct HttpDecodablePipeline<U: Decodable>: HttpRequestPipeline {
         self.validators = validators
         self.decoder = decoder
     }
-    
+
     ///
     /// Executes  the request, encodes the body, validates the response and decodes the data
     ///
@@ -50,11 +52,15 @@ public struct HttpDecodablePipeline<U: Decodable>: HttpRequestPipeline {
     ///
     /// - Returns: The decoded response object
     ///
-    public func execute(_ executor: ((HttpRequest) async throws -> HttpResponse)) async throws -> U {
-        let req = HttpRawRequest(url: url,
-                                  method: method,
-                                  headers: headers,
-                                  body: body)
+    public func execute(
+        _ executor: ((HttpRequest) async throws -> HttpResponse)
+    ) async throws -> U {
+        let req = HttpRawRequest(
+            url: url,
+            method: method,
+            headers: headers,
+            body: body
+        )
 
         let response = try await executor(req)
         let validation = HttpResponseValidation(validators + decoder.validators)
@@ -62,4 +68,3 @@ public struct HttpDecodablePipeline<U: Decodable>: HttpRequestPipeline {
         return try decoder.decode(response.data)
     }
 }
-

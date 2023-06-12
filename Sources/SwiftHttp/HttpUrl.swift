@@ -9,32 +9,32 @@ import Foundation
 
 /// A wrapper to store and manipulate URLs in a safer way
 public struct HttpUrl {
-    
+
     /// Scheme of the url, e.g. https
     public var scheme: String
-    
+
     /// Hostname of the url, e.g. www.localhost.com
     public var host: String
-    
+
     /// Port of the url, e.g. 80
     public var port: Int
-    
+
     /// Path components of the url, e.g. `/api/list = ["api", "list"]`
     public var path: [String]
-    
+
     /// Resource part of the url after the path components, e.g. `sitemap.xml`
 		/// This is being URL-encoded so you can't but any path in it. To do that, add a suffix
     public var resource: String?
 
-		/// If you need some path behind your resource, use this!
-		public var suffix: String?
-    
+    /// If you need some path behind your resource, use this!
+    public var suffix: String?
+
     /// Query parameters, e.g. `?foo=bar`
     public var query: [String: String]
-    
+
     /// Fragment of the url, e.g. `#foo`
     public var fragment: String?
-    
+
     ///
     /// Initialize a HttpUrl object
     ///
@@ -46,20 +46,22 @@ public struct HttpUrl {
     /// - Parameter query: The  query, default: `[:]`
     /// - Parameter fragment: The  fragment, default: `nil`
     ///
-    public init(scheme: String = "https",
-                host: String,
-                port: Int = 80,
-                path: [String] = [],
-                resource: String? = nil,
-								suffix: String? = nil,
-                query: [String : String] = [:],
-                fragment: String? = nil) {
+    public init(
+        scheme: String = "https",
+        host: String,
+        port: Int = 80,
+        path: [String] = [],
+        resource: String? = nil,
+		suffix: String? = nil,
+        query: Dictionary<String, String> = [:],
+        fragment: String? = nil
+    ) {
         self.scheme = scheme
         self.host = host
         self.port = port
         self.path = path
         self.resource = resource
-				self.suffix = suffix
+        self.suffix = suffix
         self.query = query
         self.fragment = fragment
     }
@@ -78,14 +80,14 @@ extension HttpUrl: Decodable {
 }
 
 extension HttpUrl: CustomStringConvertible {
-    
+
     public var description: String {
         url.description
     }
 }
 
-public extension HttpUrl {
-    
+extension HttpUrl {
+
     ///
     /// Add new scheme to a given url
     ///
@@ -93,12 +95,12 @@ public extension HttpUrl {
     ///
     /// - Returns: A new HttpUrl object
     ///
-    func scheme(_ value: String) -> HttpUrl {
+    public func scheme(_ value: String) -> HttpUrl {
         var newUrl = self
         newUrl.scheme = value
         return newUrl
     }
-    
+
     ///
     /// Add new path components to a given url
     ///
@@ -106,12 +108,12 @@ public extension HttpUrl {
     ///
     /// - Returns: A new HttpUrl object
     ///
-    func path(_ values: String...) -> HttpUrl {
+    public func path(_ values: String...) -> HttpUrl {
         var newUrl = self
         newUrl.path = path + values
         return newUrl
     }
-    
+
     ///
     /// Add new path components to a given url
     ///
@@ -119,12 +121,12 @@ public extension HttpUrl {
     ///
     /// - Returns: A new HttpUrl object
     ///
-    func path(_ values: [String]) -> HttpUrl {
+    public func path(_ values: [String]) -> HttpUrl {
         var newUrl = self
         newUrl.path = path + values
         return newUrl
     }
-    
+
     ///
     /// Add new query parameter values to the url
     ///
@@ -132,13 +134,13 @@ public extension HttpUrl {
     ///
     /// - Returns: A new HttpUrl object
     ///
-    func query(_ query: [String: String?]) -> HttpUrl {
+    public func query(_ query: [String: String?]) -> HttpUrl {
         let finalQuery = query.compactMapValues { $0 }
         var newUrl = self
         newUrl.query = newUrl.query.merging(finalQuery) { $1 }
         return newUrl
     }
-    
+
     ///
     /// Add a single query parameter value to the url
     ///
@@ -147,10 +149,10 @@ public extension HttpUrl {
     ///
     /// - Returns: A new HttpUrl object
     ///
-    func query(_ key: String, _ value: String?) -> HttpUrl {
+    public func query(_ key: String, _ value: String?) -> HttpUrl {
         query([key: value])
     }
-    
+
     ///
     /// Add a new resource part to the url
     ///
@@ -158,22 +160,22 @@ public extension HttpUrl {
     ///
     /// - Returns: A new HttpUrl object
     ///
-    func resource(_ resource: String) -> HttpUrl {
+    public func resource(_ resource: String) -> HttpUrl {
         var newUrl = self
         newUrl.resource = resource
         return newUrl
     }
-	
-		///
-		/// Add a suffix part to the url
-		/// - Parameter suffix: Suffix path component
-		/// - Returns: A new HttpUrl object
-		func suffix(_ suffix: String) -> HttpUrl {
-				var newUrl = self
-				newUrl.suffix = suffix
-				return newUrl
-		}
-    
+
+    ///
+    /// Add a suffix part to the url
+    /// - Parameter suffix: Suffix path component
+    /// - Returns: A new HttpUrl object
+    func suffix(_ suffix: String) -> HttpUrl {
+        var newUrl = self
+        newUrl.suffix = suffix
+        return newUrl
+    }
+
     ///
     /// Add a fragment to the url
     ///
@@ -181,37 +183,39 @@ public extension HttpUrl {
     ///
     /// - Returns: A new HttpUrl object
     ///
-    func fragment(_ fragment: String) -> HttpUrl {
+    public func fragment(_ fragment: String) -> HttpUrl {
         var newUrl = self
         newUrl.fragment = fragment
         return newUrl
     }
-    
+
     // MARK: - URL
-    
+
     /// Returns the URL representation of the HttpUrl object
-    var url: URL {
+    public var url: URL {
         var components = URLComponents()
         components.scheme = scheme
         components.host = host
         components.port = port
         var path = "/" + path.joined(separator: "/")
-        
+
         if let resource = resource?.url() {
             if (!resource.starts(with: "/")) {
                 path += "/"
             }
-            
+
             path += resource
         }
-			
-				if let suffix = suffix {
-						path += suffix
-				}
-			
+
+        if let suffix = suffix {
+            path += suffix
+        }
+
         components.percentEncodedPath = path
         components.fragment = fragment
-        components.queryItems = query.map { .init(name: $0.key, value: $0.value) }
+        components.queryItems = query.map {
+            .init(name: $0.key, value: $0.value)
+        }
         if let items = components.queryItems, items.isEmpty {
             components.queryItems = nil
         }
@@ -226,24 +230,31 @@ public extension HttpUrl {
 }
 
 extension HttpUrl {
-    
+
     /// Initialize a `HttpUrl` object with `string`
     ///
     /// Returns `nil` if a `HttpUrl` cannot be formed with the string (for example, if the string contains characters that are illegal in a URL, or is an empty string).
     public init?(string: String) {
         if let url = URL(string: string) {
             self.init(url: url)
-        } else {
+        }
+        else {
             return nil
         }
     }
-    
+
     /// Initialize a `HttpUrl` object with `URL` object
     ///
     /// Returns `nil` if a `HttpUrl` cannot be formed with the `URL` (for example, if the string contains characters that are illegal in a URL, or is an empty string).
     public init?(url: URL) {
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return nil }
-        var path = components.percentEncodedPath.trimmingCharacters(in: CharacterSet(charactersIn: "/")).components(separatedBy: "/")
+        guard let components = URLComponents(
+            url: url,
+            resolvingAgainstBaseURL: true
+        ) else { return nil }
+        var path = components.percentEncodedPath
+            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            .components(separatedBy: "/")
+            .filter { !$0.isEmpty }
         let resource: String?
         if path.last?.contains(".") == true {
             resource = path.removeLast()
@@ -256,7 +267,9 @@ extension HttpUrl {
             port: components.port ?? 80,
             path: path,
             resource: resource,
-            query: components.queryItems.map({ Dictionary($0.map({ ($0.name, $0.value ?? "") })) { _, s in s } }) ?? [:],
+            query: components.queryItems.map({
+                Dictionary($0.map({ ($0.name, $0.value ?? "") })) { _, s in s }
+            }) ?? [:],
             fragment: components.fragment
         )
     }

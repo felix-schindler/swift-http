@@ -6,6 +6,7 @@
 //
 
 import XCTest
+
 @testable import SwiftHttp
 
 final class SwiftHttpTests: XCTestCase {
@@ -17,7 +18,8 @@ final class SwiftHttpTests: XCTestCase {
             XCTFail("Request should be cancelled")
         }
 
-        DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(10)) {
+        let deadline = DispatchTime.now() + .milliseconds(10)
+        DispatchQueue.global().asyncAfter(deadline: deadline) {
             task.cancel()
         }
 
@@ -29,7 +31,7 @@ final class SwiftHttpTests: XCTestCase {
             XCTAssertEqual((error as? URLError)?.code, .cancelled)
         }
     }
-    
+
     func testError() async throws {
         do {
             _ = try await api.invalidApiCall()
@@ -41,10 +43,9 @@ final class SwiftHttpTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testQueryParams() async throws {
         let res = try await api.filterPosts(1)
         XCTAssertEqual(res.count, 10)
     }
 }
-
