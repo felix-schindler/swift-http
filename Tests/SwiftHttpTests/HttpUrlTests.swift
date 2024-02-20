@@ -30,6 +30,15 @@ final class HttpUrlTests: XCTestCase {
             "foo": "1",
         ])
         XCTAssertEqual(query2Url.url.absoluteString, "https://jsonplaceholder.typicode.com/todos?foo=1")
+		
+		let query3Url = HttpUrl(
+			host: "jsonplaceholder.typicode.com",
+			path: ["todos"],
+			query: [
+				"foo": "1"
+			]
+		)
+		XCTAssertEqual(query3Url.url.absoluteString, "https://jsonplaceholder.typicode.com/todos?foo=1")
     }
     
     func testMorePaths() async throws {

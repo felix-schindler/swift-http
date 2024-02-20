@@ -10,10 +10,9 @@ import XCTest
 @testable import SwiftHttp
 
 final class HttpRawRequestTests: XCTestCase {
+	private let client = UrlSessionHttpClient(session: .shared, logLevel: .trace)
 
     func testRawRequest() async throws {
-        let client = UrlSessionHttpClient(session: .shared, logLevel: .trace)
-
         let url = HttpUrl(
             scheme: "https",
             host: "jsonplaceholder.typicode.com",
