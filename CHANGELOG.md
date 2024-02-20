@@ -1,12 +1,5 @@
 #  Changelog
 
-## f1.1.0
-
-- Added `URLCache`
-  - (which is failing some tests, see #2)
-  - Created `URLCache.setup()` function for automatic setup when creating a `UrlSessionHttpClient`
-- Updated upstream (to 1.2.2)
-
 ## f1.0.5
 
 - Add `suffix` to `HttpUrl` which is placed behind `resource`
