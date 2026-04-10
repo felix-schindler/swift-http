@@ -8,7 +8,7 @@
 import Foundation
 
 /// A generic error object to transfer HTTP related error messages
-public enum HttpError: LocalizedError {
+public enum HttpError: LocalizedError, @unchecked Sendable {
 
     /// The response is not a valid HTTP response
     case invalidResponse
